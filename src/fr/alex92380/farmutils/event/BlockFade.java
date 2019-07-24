@@ -1,5 +1,7 @@
 package fr.alex92380.farmutils.event;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -10,6 +12,9 @@ import org.bukkit.event.block.BlockFadeEvent;
 public class BlockFade implements Listener {
     @EventHandler
     public void onBlockFade(BlockFadeEvent event){
-        event.setCancelled(true);
+        if(event.getBlock().getType().equals(Material.FARMLAND)){
+            event.setCancelled(true);
+        }
+
     }
 }
