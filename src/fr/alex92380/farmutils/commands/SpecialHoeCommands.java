@@ -18,15 +18,14 @@ public class SpecialHoeCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
        if(sender instanceof Player){
-Player player = (Player)sender;
-
-        ItemStack specialhoe = new ItemStack(Material.DIAMOND_HOE);
-        ItemMeta specialHoeMeta = specialhoe.getItemMeta();
+        Player player = (Player)sender;
+        ItemStack specialHoe = new ItemStack(Material.DIAMOND_HOE);
+        ItemMeta specialHoeMeta = specialHoe.getItemMeta();
         specialHoeMeta.setDisplayName("§eSPECIAL HOE");
         specialHoeMeta.setLore(Arrays.asList("§ereplace seeds on","§e 3 X 3"));
         specialHoeMeta.addEnchant(Enchantment.DURABILITY,3,true);
-        specialhoe.setItemMeta(specialHoeMeta);
-player.getInventory().addItem(specialhoe);
+        specialHoe.setItemMeta(specialHoeMeta);
+player.getInventory().addItem(specialHoe);
     }else {
            sender.sendMessage("[FarmUtils]This command must be executed by a player");
        }

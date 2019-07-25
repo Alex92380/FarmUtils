@@ -2,6 +2,7 @@ package fr.alex92380.farmutils.event;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,42 +11,47 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+
 import java.util.ArrayList;
 
 /**
  * Created by Alex92380
  */
 public class PlayerInteract implements Listener {
-    ArrayList<Location> locationArrayList = new ArrayList<>();
-//I know this code need to be optimised (i'm gonna to doing that on the new version)
+    ArrayList<Location> dirtPosition = new ArrayList<>();
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        World world = player.getWorld();
         if (event.getItem() == null || event.getItem().getItemMeta() == null) return;
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK
                 && event.getClickedBlock().getType().equals(Material.FARMLAND)
                 && event.getItem().getType() == Material.DIAMOND_HOE
                 && event.getItem().getItemMeta().getDisplayName().equals("§eSPECIAL HOE")) {
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() - 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() + 1));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() + 1));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() + 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() + 1));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() - 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ()));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ()));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() + 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ()));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() - 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() - 1));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() - 1));
-            locationArrayList.add(new Location(player.getWorld(), event.getClickedBlock().getLocation().getX() + 1, event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ() - 1));
-            for (Location arrayList : locationArrayList) {
-                if (Material.FARMLAND == arrayList.getBlock().getType() && player.getInventory().contains(Material.WHEAT_SEEDS)) {
-                    removeItems(player.getInventory(), Material.WHEAT_SEEDS, 1);
-                    Location blockunder = arrayList.add(0, 1, 0);
-                    blockunder.getBlock().setType(Material.LEGACY_CROPS);
-                }
+            double blockX = event.getClickedBlock().getX();
+            double blockY = event.getClickedBlock().getY();
+            double blockZ = event.getClickedBlock().getZ();
+            dirtPosition.add(new Location(world, blockX - 1, blockY, blockZ + 1));
+            dirtPosition.add(new Location(world, blockX, blockY, blockZ + 1));
+            dirtPosition.add(new Location(world, blockX + 1, blockY, blockZ + 1));
+            dirtPosition.add(new Location(world, blockX - 1, blockY, blockZ));
+            dirtPosition.add(new Location(world, blockX, blockY, blockZ));
+            dirtPosition.add(new Location(world, blockX + 1, blockY, blockZ));
+            dirtPosition.add(new Location(world, blockX - 1,blockY, blockZ - 1));
+            dirtPosition.add(new Location(world, blockX, blockY, blockZ - 1));
+            dirtPosition.add(new Location(world, blockX + 1,blockY, blockZ - 1));
+            for (Location dirtLocation : dirtPosition) {
+                if (Material.FARMLAND == dirtLocation.getBlock().getType() && player.getInventory().contains(Material.WHEAT_SEEDS)) {
+                    Location blockon = dirtLocation.add(0, 1, 0);
+                    if(blockon.getBlock().isEmpty()){
+                        removeItems(player.getInventory(), Material.WHEAT_SEEDS, 1);
+                    blockon.getBlock().setType(Material.LEGACY_CROPS);
+                }}
             }
         }
     }
 
-    public static void removeItems(Inventory inventory, Material type, int amount) {
+    private static void removeItems(Inventory inventory, Material type, int amount) {
         if (amount <= 0) return;
         int size = inventory.getSize();
         for (int slot = 0; slot < size; slot++) {
